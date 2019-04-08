@@ -16,9 +16,9 @@ Rough Implementation Plan:
 
 Member | Photograph
 --- | ---
-Joshua Singer | <img src="img/josh.jpg" alt="Josh Singer" title="Josh Singer" width="150">
-Tyler Smith | <img src="img/TODO.png" alt="Tyler Smith" title="Tyler Smith" width="150">
-Abhi Kulgod | <img src="img/TODO.jpg" alt="Abhi Kulgod" title="Abhi Kulgod" width="150">
+Joshua Singer | <img src="images/josh.jpg" alt="Josh Singer" title="Josh Singer" width="150">
+Tyler Smith | <img src="images/TODO.png" alt="Tyler Smith" title="Tyler Smith" width="150">
+Abhi Kulgod | <img src="images/TODO.jpg" alt="Abhi Kulgod" title="Abhi Kulgod" width="150">
 
 ## Team Skills Matrix
 Member | Skills | Personal Traits | Desired Growth | Weaknesses
