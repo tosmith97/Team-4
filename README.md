@@ -17,14 +17,14 @@ Rough Implementation Plan:
 Member | Photograph
 --- | ---
 Joshua Singer | <img src="images/josh.jpg" alt="Josh Singer" title="Josh Singer" width="150">
-Tyler Smith | <img src="images/TODO.png" alt="Tyler Smith" title="Tyler Smith" width="150">
+Tyler Otha Smith | <img src="images/tyler.jpg" alt="Tyler Smith" title="Tyler Smith" width="150">
 Abhi Kulgod | <img src="images/abhi.jpg" alt="Abhi Kulgod" title="Abhi Kulgod" width="150">
 
 ## Team Skills Matrix
 Member | Skills | Personal Traits | Desired Growth | Weaknesses
 --- | --- | --- | --- | ---
 Josh | AI, ML, iOS, Backend | Leadership, decisive | Mid stack web development | Finishing things, forgetful
-Tyler | TODO TODO TODO| TODO TODO TODO | TODO TODO TODO | TODO TODO TODO
+Tyler | AI/ML, Node, React Native | Conflict Resolution, Emotional Support, Proven Producer | UI/UX, iOS development (Swift, Storyboard, etc) | Procrastinating
 Abhi | AI/ML, Backend, Data Management| Communicator | UI/UX design | load balancing/scheduling 
 
 ## Team Communication
