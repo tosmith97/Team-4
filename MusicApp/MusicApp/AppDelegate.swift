@@ -15,8 +15,8 @@ import GoogleSignIn
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, SPTSessionManagerDelegate {
     
-    let SpotifyClientID = "[your spotify client id here]"
-    let SpotifyRedirectURL = URL(string: "spotify-ios-quick-start://spotify-login-callback")!
+    let SpotifyClientID = "31f86341f7554668966e8a1b983c16ab"
+    let SpotifyRedirectURL = URL(string: "musicapp://spotify-login-callback")!
     
     lazy var configuration = SPTConfiguration(
         clientID: SpotifyClientID,
@@ -131,24 +131,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, SPTSes
         
         
         let sendingAppID = options[.sourceApplication]
-        print("source application = \(sendingAppID ?? "Unknown")")
+        print("source application = \(sendingAppID ?? "Unknown") sending app")
+        print("\(sendingAppID)")
+        if "\(sendingAppID ?? "Unknown")" == "com.spotify.client" {
+            self.sessionManager.application(app, open: url, options: options)
+            print("here")
+            return true
+        }
         
-//        // Process the URL.
-//        guard let components = NSURLComponents(url: url, resolvingAgainstBaseURL: true),
-//            let albumPath = components.path,
-//            let params = components.queryItems else {
-//                print("Invalid URL or album path missing")
-//                return false
-//        }
-//        
-//        if let photoIndex = params.first(where: { $0.name == "index" })?.value {
-//            print("albumPath = \(albumPath)")
-//            print("photoIndex = \(photoIndex)")
-//            return true
-//        } else {
-//            print("Photo index missing")
-//            return false
-//        }
         
         return GIDSignIn.sharedInstance().handle(url as URL?,
                                                  sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,

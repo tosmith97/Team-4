@@ -26,7 +26,6 @@ class LoginSignUpViewController: UIViewController, GIDSignInUIDelegate {
 
     func sign(_ signIn: GIDSignIn?, didSignInFor user: GIDGoogleUser?) throws {
         let idToken = user?.authentication.idToken
-        performSegue(withIdentifier: "toMusicAuthentication", sender: nil)
     }
     
     

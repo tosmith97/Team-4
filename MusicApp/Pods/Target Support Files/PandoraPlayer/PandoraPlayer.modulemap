@@ -1,6 +1,0 @@
-framework module PandoraPlayer {
-  umbrella header "PandoraPlayer-umbrella.h"
-
-  export *
-  module * { export * }
-}

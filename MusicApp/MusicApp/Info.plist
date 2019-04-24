@@ -32,10 +32,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string></string>
+			<string>com.joshuasinger.musicapp</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.joshuasinger.MusicApp</string>
+				<string>musicapp</string>
 			</array>
 		</dict>
 	</array>
