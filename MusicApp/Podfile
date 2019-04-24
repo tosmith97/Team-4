@@ -7,6 +7,7 @@ target 'MusicApp' do
 
   # Pods for MusicApp
   pod 'GoogleSignIn'
-  pod 'PandoraPlayer'
+#  pod 'PandoraPlayer'
   pod 'RealmSwift'
+#  pod 'AudioKit'
 end

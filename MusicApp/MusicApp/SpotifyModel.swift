@@ -6,12 +6,12 @@
 //  Copyright © 2019 Joshua Singer. All rights reserved.
 //
 
-import RealmSwift
+//import RealmSwift
 
 
-
-class MusicLoggedin: Object {
-    @objc dynamic var spotifyLoggedIn = false
-    @objc dynamic var soundcloudLoggedIn = false
-}
+//
+//class MusicLoggedin: Object {
+//    @objc dynamic var spotifyLoggedIn = false
+//    @objc dynamic var soundcloudLoggedIn = false
+//}
 
