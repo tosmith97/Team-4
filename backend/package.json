@@ -1,0 +1,32 @@
+{
+  "name": "musiq",
+  "version": "1.0.0",
+  "description": "Tool to help counties understand their recidivism data",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "express-validator": "^5.3.1",
+    "googleapis": "^39.2.0",
+    "install": "^0.12.2",
+    "mongoose": "^5.4.14",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.18.10",
+    "npm": "^6.8.0",
+    "package.json": "^2.0.1",
+    "parse-error": "^0.2.0",
+    "passport": "^0.4.0",
+    "path": "^0.12.7",
+    "querystring": "^0.2.0",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha",
+    "start": "nodemon ./bin/www --trace-sync-io"
+  },
+  "author": "tosmith",
+  "license": "ISC"
+}
