@@ -1,15 +1,17 @@
-# Musiq
+# Scribe
 
 <img src="images/logo.png" width="150">
 
 
 ## Project Synopsis
-An application to allow people to queue up music from Spotify and Soundlcoud seamlessly into single playlists.
+An application to people to have conference calls that are transcribed. The call is transcribed, and a document is texted to the callees that contains the transcription of the call.
 
 Rough Implementation Plan:
-- Set up backend to handle music account creation.
-- Develop client application to play music.
-- Create backend to stream music seamlessly from each source and simplify playback.
+- Set up backend to handle phone call conferencing.
+- Develop pipeline for getting call audio data, cleaning the audio data, and converting the cleaned audio data into text.
+- Create NLP engine and document processing pipeline.
+- Host the documents in the cloud and create unique urls to those documents
+- Send the URL's to the callers
 
 
 ## Team Members
