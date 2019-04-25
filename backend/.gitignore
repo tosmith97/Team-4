@@ -1,0 +1,22 @@
+*.pem
+node_modules/
+logs
+*.log
+npm-debug.log*
+.env
+other/
+.nyc_output/
+coverage/
+envs/
+.env
+adminMongo/
+elastic-search.pem
+tmp/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+.ebextensions/
+
+.DS_Store
