@@ -1,0 +1,17 @@
+[
+    {
+        "action": "talk",
+        "text": "Please wait while we connect you to the conference. This call may be recording for quality assurance and record keeping."
+    },
+    {
+        "action": "record",
+        "eventUrl": [
+            "https://$hostname/calls/recordings"
+        ]
+    },
+    {
+        "action": "conversation",
+        "name": "TEST",
+        "record": true
+    }
+]
