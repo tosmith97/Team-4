@@ -123,3 +123,5 @@ dmypy.json
 .pyre/
 
 private.key
+
+.DS_Store
