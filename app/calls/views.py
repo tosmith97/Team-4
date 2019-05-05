@@ -7,6 +7,7 @@ from flask import (
     jsonify,
     current_app
 )
+import nexmo
 
 from flask_rq import get_queue
 
@@ -17,6 +18,7 @@ from string import Template
 from flask import current_app
 import uuid
 import urllib
+import os
 
 calls = Blueprint('calls', __name__)
 
@@ -25,7 +27,7 @@ calls = Blueprint('calls', __name__)
 def start_call():
     request_data = json.loads(request.data)
     ncco_data = {}
-    ncco_data['hostname'] = current_app.config['HOST_NAME']
+    ncco_data['hostname'] = '127.0.0.1:5000' #current_app.config['HOST_NAME']
     conversation_uuid = request_data['conversation_uuid']
     query_string = {'conversation_uuid': conversation_uuid}
     encoded_query_string = '?' + urllib.parse.urlencode(query_string)
@@ -40,7 +42,20 @@ def start_call():
 
 @calls.route('/events', methods=['GET', 'POST'])
 def call_events():
-    print(request.data)
+    print('events')
+    res = json.loads(request.data)
+    print(res)
+    print(type(res))
+    client = nexmo.Client(
+        application_id='4811d796-b14a-4775-b13c-4a93dec02e98',
+        private_key='private.key',
+    )
+    if 'recording_url' in res:
+        url = request.data.recording_url.decode('utf-8')
+        response = client.get_recording(url)
+        print(url)
+        print(response)
+    print()
     return "", 200
 
 
@@ -48,4 +63,10 @@ def call_events():
 def call_recordings():
     print(request.data)
     print("RECORDING")
+    
+    return "", 200
+
+@calls.route('/create-call/new', methods=['GET', 'POST'])
+def new_call():
+    print('called')
     return "", 200
