@@ -26,7 +26,7 @@ Abhi Kulgod | <img src="images/abhi.jpg" alt="Abhi Kulgod" title="Abhi Kulgod" w
 Member | Skills | Personal Traits | Desired Growth | Weaknesses
 --- | --- | --- | --- | ---
 Josh | AI, ML, iOS, Backend | Leadership, decisive | Mid stack web development | Finishing things, forgetful
-Tyler | AI/ML, Node, React Native | Conflict Resolution, Emotional Support, Proven Producer | UI/UX, iOS development (Swift, Storyboard, etc) | Procrastinating
+Tyler | AI/ML, Node, React Native | Conflict Resolution, Emotional Support, Proven Producer | UI/UX | Procrastinating
 Abhi | AI/ML, Backend, Data Management| Communicator | UI/UX design | load balancing/scheduling 
 
 ## Team Communication
