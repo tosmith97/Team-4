@@ -19,6 +19,7 @@ from flask import current_app
 import uuid
 import urllib
 import os
+from datetime import datetime
 
 calls = Blueprint('calls', __name__)
 
@@ -44,17 +45,18 @@ def start_call():
 def call_events():
     print('events')
     res = json.loads(request.data)
-    print(res)
-    print(type(res))
     client = nexmo.Client(
         application_id='4811d796-b14a-4775-b13c-4a93dec02e98',
         private_key='private.key',
     )
-    if 'recording_url' in res:
-        url = request.data.recording_url.decode('utf-8')
-        response = client.get_recording(url)
-        print(url)
-        print(response)
+    url = res.get('recording_url')
+    if url:
+        print('we have url')
+        response = client.get_recording(url)        
+        fn = res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d')) + '.wav'
+        with open(os.path.join(*[os.getcwd(), 'recordings', fn]), "wb+") as f:
+            f.write(response)
+        print('file saved')
     print()
     return "", 200
 
@@ -63,7 +65,6 @@ def call_events():
 def call_recordings():
     print(request.data)
     print("RECORDING")
-    
     return "", 200
 
 @calls.route('/create-call/new', methods=['GET', 'POST'])
