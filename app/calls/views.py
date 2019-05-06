@@ -22,6 +22,7 @@ import uuid
 import urllib
 import os
 from datetime import datetime
+from io import BytesIO
 
 calls = Blueprint('calls', __name__)
 
@@ -54,11 +55,9 @@ def call_events():
     url = res.get('recording_url')
     if url:
         print('we have url')
-        response = client.get_recording(url)        
+        response = client.get_recording(url)
         fn = os.path.join(*[os.getcwd(), 'recordings', res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d')) + '.wav'])
-        with open(fn, "wb+") as f:
-            f.write(response)
-        a = AudioSegment.from_file(fn).resample(sample_width=16)
+        a = AudioSegment.from_file(BytesIO(response), channels=2, sample_width=2, frame_rate=16000)
         a.export(fn, format="wav")
         print('file saved')
     print()
