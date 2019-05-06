@@ -51,4 +51,8 @@ if __name__=="__main__":
                 'recordings',
                 'test.wav')
 
+<<<<<<< HEAD
     client.transcribeAudioFile(filename)
+=======
+    client.transcribeAudioFile(filename)
+>>>>>>> save file properly when recording call
