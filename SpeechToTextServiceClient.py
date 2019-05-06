@@ -18,7 +18,7 @@ class SpeechToTextServiceClient:
         with open(file_name, 'rb') as audio_file:
             content = audio_file.read()
             audio = types.RecognitionAudio(content=content)
-
+        print(info)
         if file_format == 'flac':
             encoding = enums.RecognitionConfig.AudioEncoding.FLAC
         elif file_format == 'wav':
@@ -49,6 +49,9 @@ if __name__=="__main__":
     filename = os.path.join(
                 os.path.dirname(__file__),
                 'recordings',
-                'test.wav')
-                
-    client.transcribeAudioFile(filename)
+                'test4.wav')
+
+    # a = AudioSegment.from_file(filename)
+    # a.export('test4.wav', format='wav')
+
+    print(client.transcribeAudioFile(filename))
