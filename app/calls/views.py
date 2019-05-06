@@ -8,6 +8,7 @@ from flask import (
     current_app
 )
 import nexmo
+import wave
 
 from flask_rq import get_queue
 
@@ -52,10 +53,10 @@ def call_events():
     url = res.get('recording_url')
     if url:
         print('we have url')
-        response = client.get_recording(url)        
+        response = client.get_recording(url)
         fn = res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d')) + '.wav'
-        with open(os.path.join(*[os.getcwd(), 'recordings', fn]), "wb+") as f:
-            f.write(response)
+        with wave.open(os.path.join(*[os.getcwd(), 'recordings', fn]), "wb") as f:
+            f.writeframes(response)
         print('file saved')
     print()
     return "", 200
