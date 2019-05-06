@@ -41,7 +41,7 @@ class SpeechToTextServiceClient:
         transcript = 'Transcript: '
         for result in response.results:
             transcript += result.alternatives[0].transcript
-        print(transcript)
+
         return transcript
 
 if __name__=="__main__":
