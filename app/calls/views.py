@@ -1,4 +1,5 @@
 import json
+from pydub import AudioSegment
 from flask import (
     Blueprint,
     redirect,
@@ -53,13 +54,14 @@ def call_events():
     if url:
         print('we have url')
         response = client.get_recording(url)        
-        fn = res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d')) + '.wav'
-        with open(os.path.join(*[os.getcwd(), 'recordings', fn]), "wb+") as f:
+        fn = os.path.join(*[os.getcwd(), 'recordings', res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d')) + '.wav'])
+        with open(fn, "wb+") as f:
             f.write(response)
+        a = AudioSegment.from_file(fn).resample(sample_width=16)
+        a.export(fn, format="wav")
         print('file saved')
     print()
     return "", 200
-
 
 @calls.route('/recordings', methods=['GET', 'POST'])
 def call_recordings():
