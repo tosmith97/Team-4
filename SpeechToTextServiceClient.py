@@ -50,5 +50,5 @@ if __name__=="__main__":
                 os.path.dirname(__file__),
                 'recordings',
                 'test.wav')
-
+                
     client.transcribeAudioFile(filename)
