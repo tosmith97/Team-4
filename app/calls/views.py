@@ -24,6 +24,8 @@ import os
 from datetime import datetime
 from io import BytesIO
 
+import SpeechToTextServiceClient as STTS
+
 calls = Blueprint('calls', __name__)
 
 
@@ -60,6 +62,9 @@ def call_events():
         a = AudioSegment.from_file(BytesIO(response), channels=2, sample_width=2, frame_rate=16000)
         a.export(fn, format="wav")
         print('file saved')
+        STTClient = STTS.SpeechToTextServiceClient()
+        transcript = STTClient.transcribeAudioFile(fn)
+        STTClient.saveTranscriptAsTxt(transcript, res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d')))
     print()
     return "", 200
 
