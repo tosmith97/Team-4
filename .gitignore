@@ -128,3 +128,6 @@ private.key
 googleauth-*.json
 
 .DS_Store
+
+googleauth-privatekey.json
+dump.rdb
