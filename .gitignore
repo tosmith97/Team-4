@@ -125,6 +125,6 @@ dmypy.json
 app/static/*
 
 private.key
-googleauth-privatekey.json
+googleauth-*.json
 
 .DS_Store
