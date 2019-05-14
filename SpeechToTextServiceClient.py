@@ -5,6 +5,8 @@ from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
 
+import soundfile
+
 class SpeechToTextServiceClient:
 
     def __init__(self):
@@ -13,12 +15,17 @@ class SpeechToTextServiceClient:
         self.client = speech.SpeechClient()
 
     def transcribeAudioFile(self, file_name, file_format='wav'):
+        # comment out if your computer treats original file as 16 bit
+        # s/o to my computer for not doing that 
+        data, samplerate = soundfile.read(file_name)
+        soundfile.write(file_name, data, samplerate, subtype='PCM_16')
+
         # Loads the audio into memory
         info = mediainfo(file_name)
         with open(file_name, 'rb') as audio_file:
             content = audio_file.read()
             audio = types.RecognitionAudio(content=content)
-        print(info)
+        # print(info)
         if file_format == 'flac':
             encoding = enums.RecognitionConfig.AudioEncoding.FLAC
         elif file_format == 'wav':
@@ -43,6 +50,15 @@ class SpeechToTextServiceClient:
             transcript += result.alternatives[0].transcript
 
         return transcript
+    
+
+    def saveTranscriptAsTxt(self, transcript, uuid):
+        print(transcript)
+        transcript_fn = os.path.join(*[os.getcwd(), 'transcripts', uuid + '.txt'])
+        with open(transcript_fn, 'w+') as f:
+            f.write(transcript)
+        print('finished')
+
 
 if __name__=="__main__":
     client = SpeechToTextServiceClient()
@@ -54,4 +70,5 @@ if __name__=="__main__":
     # a = AudioSegment.from_file(filename)
     # a.export('test4.wav', format='wav')
 
-    print(client.transcribeAudioFile(filename))
+    transcript = client.transcribeAudioFile(filename)
+    client.saveTranscriptAsTxt(transcript, '1')
