@@ -29,6 +29,7 @@ fn = os.path.join(*[os.getcwd(), 'recordings', datetime.date.today().strftime('%
 
 a = AudioSegment.from_file(BytesIO(response), channels=2, sample_width=2, frame_rate=16000)
 a.export(fn, format="wav")
-
+info = mediainfo(fn)
+print(info)
 STTClient = STTS.SpeechToTextServiceClient()
 print(STTClient.transcribeAudioFile(fn))
