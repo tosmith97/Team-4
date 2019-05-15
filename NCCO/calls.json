@@ -7,7 +7,10 @@
         "action": "record",
         "eventUrl": [
             "https://$hostname/calls/recordings"
-        ]
+        ],
+        "format": "wav",
+        "channels": 3,
+        "split": "conversation"
     },
     {
         "action": "conversation",
