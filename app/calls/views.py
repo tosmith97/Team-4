@@ -57,9 +57,10 @@ def call_events():
     url = res.get('recording_url')
     if url:
         print('we have url')
+        print(url)
         response = client.get_recording(url)
         fn = os.path.join(*[os.getcwd(), 'recordings', res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d')) + '.wav'])
-        a = AudioSegment.from_file(BytesIO(response), channels=2, sample_width=2, frame_rate=16000)
+        a = AudioSegment.from_file(BytesIO(response), channels=3, sample_width=2, frame_rate=16000)
         a.export(fn, format="wav")
         print('file saved')
         STTClient = STTS.SpeechToTextServiceClient()

@@ -51,9 +51,10 @@ class Config:
     EMAIL_SUBJECT_PREFIX = '[{}]'.format(APP_NAME)
     EMAIL_SENDER = '{app_name} Admin <{email}>'.format(
         app_name=APP_NAME, email=MAIL_USERNAME)
-
+    NEXMO_NUMBER = os.getenv('NEXMO_NUMBER')
     REDIS_URL = os.getenv('REDISTOGO_URL') or 'http://localhost:6379'
-
+    NEXMO_API_KEY = os.getenv('NEXMO_API_KEY')
+    NEXMO_SECRET = os.getenv('NEXMO_SECRET')
     RAYGUN_APIKEY = os.environ.get('RAYGUN_APIKEY')
 
     # Parse the REDIS_URL to set RQ config variables

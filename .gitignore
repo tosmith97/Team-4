@@ -131,3 +131,5 @@ googleauth-*.json
 
 googleauth-privatekey.json
 dump.rdb
+
+*.env
