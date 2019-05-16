@@ -10,15 +10,33 @@
 .unhidden {
     visibility: visible;
 }
+
+.centered { 
+    margin:0 auto;
+}
+
+.small-width {
+    width: 25em;
+}
 </style>
+
+
 
 
 <div class="ui text container">
     <p id='info-text'>Press the button below to start a new call</p>
-    <button type="button" class="btn btn-dark" id="new-call">Start New Call</button>
+
+    <div class="input-group mb-3 small-width" id="n-channels-container">
+        <div class="input-group-prepend ">
+            <span class="input-group-text" id="inputGroup-sizing-default">How many people are on your call?</span>
+        </div>
+        <input id='n-channels' type="number" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+    </div>
+
+    <button type="button" class="btn btn-dark" id="new-call" disabled="disabled">Start New Call</button>
 </div>
 
-<div id='call-card' class="card hidden" style="width: 25em;margin:0 auto;">
+<div id='call-card' class="card hidden centered small-width">
     <div class="card-header">
         Call Title
     </div>
@@ -30,11 +48,16 @@
 </div>
 
 <script>
+    $('#n-channels').bind('keyup', function() {
+        if($('#n-channels').val() != '') $('#new-call').removeAttr('disabled');
+    });
+
     var timer = new Timer();
     $( "#new-call" ).click(function() {
         $( this ).toggle();
         $( '#info-text' ).toggle();
-        fetch('http://127.0.0.1:5000/calls/create-call/new')
+        $( '#n-channels-container' ).toggle();
+        fetch('http://127.0.0.1:5000/calls/create-call/new', {n_channels: $('n-channels').val()})
         .then(function(response) {
             console.log(response);
         });
@@ -49,6 +72,7 @@
     $( "#end-call" ).click(function() {
         $("#new-call").toggle();
         $( '#info-text' ).toggle();
+        $( '#n-channels-container' ).toggle();
         $('#call-card').addClass('hidden');
         $('#call-card').removeClass('unhidden');
         timer.stop();

@@ -15,7 +15,7 @@ from flask_rq import get_queue
 
 from app import db
 
-from app.models import User
+from app.models import User, Call
 from string import Template
 from flask import current_app
 import uuid
@@ -69,18 +69,30 @@ def call_recordings():
         print('we have url')
         print(url)
         response = client.get_recording(url)
-        fn = os.path.join(*[os.getcwd(), 'recordings', res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d')) + '.wav'])
-        a = AudioSegment.from_file(BytesIO(response), channels=3, sample_width=2, frame_rate=16000)
+        uuid = res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d'))
+        fn = os.path.join(*[os.getcwd(), 'recordings', uuid + '.wav'])
+
+        # getting most recent is bad but for practical purposes works
+        last_call = db.session.query((Call.call_uuid == None).order_by(Call.id.desc())).first()
+        last_call.call_uuid = uuid
+        last_call.filename = fn
+
+        a = AudioSegment.from_file(BytesIO(response), channels=last_call.num_channels, sample_width=2, frame_rate=16000)
         a.export(fn, format="wav")
+        db.session.commit()
         print('file saved')
         STTClient = STTS.SpeechToTextServiceClient()
         transcript = STTClient.transcribeAudioFile(fn, True)
-        STTClient.saveTranscriptAsTxt(transcript, res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d')))
+        STTClient.saveTranscriptAsTxt(transcript, uuid)
     print()
     sys.stdout.flush()
     return "", 200
 
 @calls.route('/create-call/new', methods=['GET', 'POST'])
 def new_call():
+    n_channels = request.n_channels
+    call = Call(num_channels=n_channels)
+    db.session.add(call)
+    db.session.commit()
     print('called')
     return "", 200
