@@ -13,7 +13,7 @@ class SpeechToTextServiceClient:
         # be set to googleauth-adde97af7066
         self.client = speech.SpeechClient()
 
-    def transcribeAudioFile(self, file_name, file_format='wav'):
+    def transcribeAudioFile(self, file_name, multichannel=False, file_format='wav'):
         # comment out if your computer treats original file as 16 bit
         # s/o to my computer for not doing that
         # data, samplerate = soundfile.read(file_name)
@@ -21,7 +21,6 @@ class SpeechToTextServiceClient:
 
         # Loads the audio into memory
         info = mediainfo(file_name)
-        print(info)
         with open(file_name, 'rb') as audio_file:
             content = audio_file.read()
             audio = speech.types.RecognitionAudio(content=content)
@@ -34,25 +33,45 @@ class SpeechToTextServiceClient:
             print("Error: only .flac and .wav formats are supported.")
             return
 
-        config = speech.types.RecognitionConfig(
-            encoding=encoding,
-            sample_rate_hertz=int(float(info['sample_rate'])),
-            audio_channel_count=int(info['channels']),
-            use_enhanced=True,
-            enable_speaker_diarization=True,
-            diarization_speaker_count=4,
-            enable_automatic_punctuation=True,
-            model='phone_call',
-            language_code='en-US')
+        if multichannel:
+            config = speech.types.RecognitionConfig(
+                encoding=encoding,
+                sample_rate_hertz=int(float(info['sample_rate'])),
+                audio_channel_count=int(info['channels']),
+                use_enhanced=True,
+                enable_separate_recognition_per_channel=True,
+                enable_automatic_punctuation=True,
+                enable_word_time_offsets=True,
+                model='phone_call',
+                language_code='en-US')
+        else:
+            config = speech.types.RecognitionConfig(
+                encoding=encoding,
+                sample_rate_hertz=int(float(info['sample_rate'])),
+                use_enhanced=True,
+                enable_speaker_diarization=True,
+                diarization_speaker_count=4,
+                enable_automatic_punctuation=True,
+                enable_word_time_offsets=True,
+                model='phone_call',
+                language_code='en-US')
 
         # Detects speech in the audio file
         response = self.client.recognize(config, audio)
-        # transcript = 'Transcript: '
-        # for result in response.results:
-        #     transcript += result.alternatives[0].transcript
+        if multichannel:
+            return self.transcribeMultichannel(response.results)
+        else:
+            return self.diarizeTranscript(response.results[-1].alternatives[0].words)
 
-        transcript = self.diarizeTranscript(response.results[-1].alternatives[0].words)
-
+    def transcribeMultichannel(self, results):
+        transcript = ""
+        for res in results:
+            ts = res.alternatives[0].words[0].start_time
+            transcript += "[%02d:%02d:%02d] " % (ts.seconds // 60,
+                                                 ts.seconds % 60,
+                                                 int(ts.nanos * 1e-9))
+            transcript += "Speaker %d: " % res.channel_tag
+            transcript += res.alternatives[0].transcript + "\n"
         return transcript
 
     def diarizeTranscript(self, words):
@@ -60,9 +79,9 @@ class SpeechToTextServiceClient:
         transcript = ""
         for w in words:
             if not started:
-                transcript += "[%02d:%02d:%02d] " % (w.start_time.seconds % 60,
-                                        w.start_time.seconds,
-                                        int(w.start_time.nanos * 1e-9))
+                transcript += "[%02d:%02d:%02d] " % (w.start_time.seconds // 60,
+                                                     w.start_time.seconds % 60,
+                                                     int(w.start_time.nanos * 1e-9))
                 transcript += "Speaker %d: " % w.speaker_tag
                 started = True
             transcript += w.word + " "
