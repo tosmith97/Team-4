@@ -15,7 +15,7 @@ from flask_rq import get_queue
 
 from app import db
 
-from app.models import User, Call
+from app.models import User #, Call
 from string import Template
 from flask import current_app
 import uuid
