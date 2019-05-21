@@ -18,11 +18,11 @@
         "eventUrl": [
             "https://$hostname/calls/events"
         ],
-        "from":"12013657126",
+        "from": "NEXMO_NUMBER",
         "endpoint": [
             {
                 "type": "phone",
-                "number": "15094329908"
+                "number": "OUT_NUMBER"
             }
         ]
     },
@@ -31,11 +31,11 @@
         "eventUrl": [
             "https://$hostname/calls/events"
         ],
-        "from":"12013657126",
+        "from": "NEXMO_NUMBER",
         "endpoint": [
             {
                 "type": "phone",
-                "number": "14083004678"
+                "number": "OUT_NUMBER"
             }
         ]
     }
