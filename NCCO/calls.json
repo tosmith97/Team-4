@@ -8,13 +8,35 @@
         "eventUrl": [
             "https://$hostname/calls/recordings"
         ],
-        "format": "wav",
         "channels": 3,
-        "split": "conversation"
+        "format": "wav",
+        "split": "conversation",
+        "beepStart": true
     },
     {
-        "action": "conversation",
-        "name": "TEST",
-        "record": true
+        "action": "connect",
+        "eventUrl": [
+            "https://$hostname/calls/events"
+        ],
+        "from":"12013657126",
+        "endpoint": [
+            {
+                "type": "phone",
+                "number": "15094329908"
+            }
+        ]
+    },
+    {
+        "action": "connect",
+        "eventUrl": [
+            "https://$hostname/calls/events"
+        ],
+        "from":"12013657126",
+        "endpoint": [
+            {
+                "type": "phone",
+                "number": "14083004678"
+            }
+        ]
     }
 ]
