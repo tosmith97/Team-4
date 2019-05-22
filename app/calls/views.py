@@ -6,7 +6,12 @@ from flask import (
     request,
     url_for,
     jsonify,
-    current_app
+    current_app,
+    render_template
+)
+from flask_login import (
+    current_user,
+    login_required
 )
 import nexmo
 import wave
@@ -15,7 +20,9 @@ from flask_rq import get_queue
 
 from app import db
 
-from app.models import User #, Call
+from app.calls.forms import CreateCallForm
+
+from app.models import User, Call
 from string import Template
 from flask import current_app
 import uuid
@@ -89,10 +96,19 @@ def call_recordings():
     return "", 200
 
 @calls.route('/create-call/new', methods=['GET', 'POST'])
+@login_required
 def new_call():
-    n_channels = request.n_channels
-    call = Call(num_channels=n_channels)
-    db.session.add(call)
-    db.session.commit()
-    print('called')
-    return "", 200
+    form = CreateCallForm()
+    if form.validate_on_submit():
+        call = Call(
+            call_name=form.call_name.data,
+            num_channels=form.num_channels.data,
+            _phone_numbers=form.phone_numbers.data,
+            user=current_user.id
+        )
+        db.session.add(call)
+        db.session.commit()   
+        print('called')
+        # return "", 200
+    
+    return render_template('calls/new_call.html', form=form)
