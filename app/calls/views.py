@@ -77,20 +77,25 @@ def call_recordings():
         print(url)
         response = client.get_recording(url)
         uuid = res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d'))
+        initial_phone_number = res.get('from', None)
         fn = os.path.join(*[os.getcwd(), 'recordings', uuid + '.wav'])
 
-        # getting most recent is bad but for practical purposes works
-        last_call = db.session.query((Call.call_uuid == None).order_by(Call.id.desc())).first()
-        last_call.call_uuid = uuid
-        last_call.filename = fn
+        if initial_phone_number:
+            # get most recent call based on who called the number + hasn't been updated before + most recent
+            last_call = db.session.query(Call).filter(
+                Call.initial_phone_number == initial_phone_number,
+                Call.call_uuid == None).
+                order_by(Call.id.desc()).first()
+            last_call.call_uuid = uuid
+            last_call.filename = fn
 
-        a = AudioSegment.from_file(BytesIO(response), channels=last_call.num_channels, sample_width=2, frame_rate=16000)
-        a.export(fn, format="wav")
-        db.session.commit()
-        print('file saved')
-        STTClient = STTS.SpeechToTextServiceClient()
-        transcript = STTClient.transcribeAudioFile(fn, True)
-        STTClient.saveTranscriptAsTxt(transcript, uuid)
+            a = AudioSegment.from_file(BytesIO(response), channels=last_call.num_channels, sample_width=2, frame_rate=16000)
+            a.export(fn, format="wav")
+            db.session.commit()
+            print('file saved')
+            STTClient = STTS.SpeechToTextServiceClient()
+            transcript = STTClient.transcribeAudioFile(fn, True)
+            STTClient.saveTranscriptAsTxt(transcript, uuid)
     print()
     sys.stdout.flush()
     return "", 200
@@ -102,7 +107,8 @@ def new_call():
     if form.validate_on_submit():
         call = Call(
             call_name=form.call_name.data,
-            num_channels=form.num_channels.data,
+            num_channels=form.num_callers.data,
+            initial_phone_number=form.initial_phone_number,
             _phone_numbers=form.phone_numbers.data,
             user=current_user.id
         )

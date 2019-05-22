@@ -134,3 +134,4 @@ googleauth-privatekey.json
 # Data/Test output
 recordings/*.wav
 dump.rdb
+*.sqlite

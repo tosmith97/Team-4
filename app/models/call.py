@@ -3,7 +3,8 @@ from .. import db
 class Call(db.Model):
     __tablename__ = 'calls'
     id = db.Column(db.Integer, primary_key=True)
-    user = db.Column('user_id', db.Integer, db.ForeignKey('user.id'))    
+    user = db.Column('user_id', db.Integer, db.ForeignKey('users.id'))
+    initial_phone_number = db.Column(db.String)  
     call_name = db.Column(db.String)
     call_uuid = db.Column(db.String(128), unique=True)
     filename = db.Column(db.String(128))
