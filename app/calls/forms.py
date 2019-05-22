@@ -14,6 +14,8 @@ from wtforms.validators import (
     Length,
 )
 
+import sys
+
 from app import db
 from app.models import Role, User
 
@@ -27,7 +29,7 @@ class CreateCallForm(Form):
         validators=[InputRequired()], 
         description="e.g. 3")
     initial_phone_number = StringField(
-        "State the number that will be instantiating the phone call",
+        "State the phone number that will be instantiating the phone call",
         validators=[InputRequired()],
         description="e.g. 2622717436"
     )
@@ -44,7 +46,11 @@ class CreateCallForm(Form):
             return False
         result = True
         
-        n_callers = len(self.phone_numbers.data.split(';'))
+        # total number of callers is equal to other people on call + person calling nexmo number
+        n_callers = len(self.phone_numbers.data.split(';')) + 1
         if n_callers != self.num_callers.data:
             result = False
+
+        sys.stdout.flush()
+
         return result

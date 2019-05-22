@@ -59,6 +59,15 @@ def start_call():
 def call_events():
     print('events')
     res = json.loads(request.data)
+
+    initial_phone_number = res.get('from', None)
+
+    if initial_phone_number:
+        # get most recent call based on who called the number + hasn't been updated before + most recent
+        last_call = db.session.query(Call).filter(Call.initial_phone_number == initial_phone_number, Call.call_uuid == None).order_by(Call.id.desc()).first()
+        last_call.call_uuid = res.get('uuid', datetime.today().strftime('%Y-%m-%d'))
+        db.session.commit()
+
     print(res)
     sys.stdout.flush()
     return "", 200
@@ -77,44 +86,45 @@ def call_recordings():
         print(url)
         response = client.get_recording(url)
         uuid = res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d'))
-        initial_phone_number = res.get('from', None)
         fn = os.path.join(*[os.getcwd(), 'recordings', uuid + '.wav'])
 
-        if initial_phone_number:
-            # get most recent call based on who called the number + hasn't been updated before + most recent
-            last_call = db.session.query(Call).filter(
-                Call.initial_phone_number == initial_phone_number,
-                Call.call_uuid == None).
-                order_by(Call.id.desc()).first()
-            last_call.call_uuid = uuid
-            last_call.filename = fn
+        # get most recent call based on who called the number + hasn't been updated before + most recent
+        last_call = db.session.query(Call).filter(Call.call_uuid == uuid).first()
+        last_call.filename = fn
 
-            a = AudioSegment.from_file(BytesIO(response), channels=last_call.num_channels, sample_width=2, frame_rate=16000)
-            a.export(fn, format="wav")
-            db.session.commit()
-            print('file saved')
-            STTClient = STTS.SpeechToTextServiceClient()
-            transcript = STTClient.transcribeAudioFile(fn, True)
-            STTClient.saveTranscriptAsTxt(transcript, uuid)
+        a = AudioSegment.from_file(BytesIO(response), channels=last_call.num_channels, sample_width=2, frame_rate=16000)
+        a.export(fn, format="wav")
+        db.session.commit()
+        print('file saved')
+        STTClient = STTS.SpeechToTextServiceClient()
+        transcript = STTClient.transcribeAudioFile(fn, True)
+        STTClient.saveTranscriptAsTxt(transcript, uuid)
     print()
     sys.stdout.flush()
     return "", 200
 
-@calls.route('/create-call/new', methods=['GET', 'POST'])
+@calls.route('/create-call', methods=['GET', 'POST'])
 @login_required
 def new_call():
     form = CreateCallForm()
+    sys.stdout.flush()
     if form.validate_on_submit():
         call = Call(
+            user=current_user.id,
+            initial_phone_number=form.initial_phone_number.data,
             call_name=form.call_name.data,
             num_channels=form.num_callers.data,
-            initial_phone_number=form.initial_phone_number,
-            _phone_numbers=form.phone_numbers.data,
-            user=current_user.id
+            _phone_numbers=form.phone_numbers.data
         )
         db.session.add(call)
         db.session.commit()   
-        print('called')
-        # return "", 200
+        sys.stdout.flush()
+        return redirect(url_for('calls.call_status', call_title=form.call_name.data))
     
     return render_template('calls/new_call.html', form=form)
+
+
+@calls.route('/create-call/new/<call_title>', methods=['GET', 'POST'])
+@login_required
+def call_status(call_title):
+    return render_template('calls/call_status.html', call_title=call_title)

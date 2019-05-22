@@ -1,0 +1,41 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/easytimer@1.1.1/src/easytimer.min.js"></script>
+
+<style>
+.centered { 
+    margin:0 auto;
+}
+
+.small-width {
+    width: 25em;
+}
+</style>
+
+
+
+<div id='call-card' class="card centered small-width">
+    <div class="card-header">
+        {{ call_title }}
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Connect to +1 (201) 365-7126</h5>
+        <div id="basicUsage">00:00:00</div>
+        <button id='end-call' class="btn btn-dark" onclick="window.location.href = 'http://127.0.0.1:5000/calls/create-call';">End Call</button>
+    </div>
+</div>
+
+<script>
+    let timer = new Timer();
+    timer.start();
+    timer.addEventListener('secondsUpdated', function (e) {
+        $('#basicUsage').html(timer.getTimeValues().toString());
+    });
+    $( "#end-call" ).click(function() {
+        timer.stop();
+        timer.reset();
+        window.location = 'http://127.0.0.1:5000/calls/create-call';
+    });
+</script>
+{% endblock %} 
