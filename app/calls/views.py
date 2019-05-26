@@ -21,6 +21,7 @@ from flask import current_app
 import uuid
 import urllib
 import os
+import sys
 from datetime import datetime
 from io import BytesIO
 
@@ -33,7 +34,7 @@ calls = Blueprint('calls', __name__)
 def start_call():
     request_data = json.loads(request.data)
     ncco_data = {}
-    ncco_data['hostname'] = '127.0.0.1:5000' #current_app.config['HOST_NAME']
+    ncco_data['hostname'] = 'b1233082.ngrok.io' #current_app.config['HOST_NAME']
     conversation_uuid = request_data['conversation_uuid']
     query_string = {'conversation_uuid': conversation_uuid}
     encoded_query_string = '?' + urllib.parse.urlencode(query_string)
@@ -42,13 +43,22 @@ def start_call():
     src = Template(filein.read())
     filein.close()
     ncco = json.loads(src.substitute(ncco_data))
-    print(jsonify(ncco))
+    print(ncco)
+    sys.stdout.flush()
     return jsonify(ncco)
 
 
 @calls.route('/events', methods=['GET', 'POST'])
 def call_events():
     print('events')
+    res = json.loads(request.data)
+    print(res)
+    sys.stdout.flush()
+    return "", 200
+
+@calls.route('/recordings', methods=['GET', 'POST'])
+def call_recordings():
+    print("recordings")
     res = json.loads(request.data)
     client = nexmo.Client(
         application_id='4811d796-b14a-4775-b13c-4a93dec02e98',
@@ -64,15 +74,10 @@ def call_events():
         a.export(fn, format="wav")
         print('file saved')
         STTClient = STTS.SpeechToTextServiceClient()
-        transcript = STTClient.transcribeAudioFile(fn)
+        transcript = STTClient.transcribeAudioFile(fn, True)
         STTClient.saveTranscriptAsTxt(transcript, res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d')))
     print()
-    return "", 200
-
-@calls.route('/recordings', methods=['GET', 'POST'])
-def call_recordings():
-    print(request.data)
-    print("RECORDING")
+    sys.stdout.flush()
     return "", 200
 
 @calls.route('/create-call/new', methods=['GET', 'POST'])
