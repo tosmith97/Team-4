@@ -1,22 +1,24 @@
 import nexmo
-# from app import create_app
 import base64
 import uuid
 import pdfkit
 import boto3
 import os
 import s3transfer
+from datetime import datetime
+from jinja2 import Template
 
 class PDFEngine:
 
     # TODO: Put object creation on the task queue
-    def __init__(self, number_of_participants=2, text=""):
-        # self.app = create_app(os.getenv('FLASK_CONFIG') or 'default')
-        self.number_of_participants = number_of_participants
-        # with app.app_context():
+    def __init__(self, participants=[], text=""):
+        self.participants = participants
+        self.number_of_participants = len(participants)
         self.from_number = os.getenv('NEXMO_NUMBER')
+        api_key = os.getenv('NEXMO_API_KEY')
+        print("apikey", api_key)
         self.nexmo_client = nexmo.Client(
-            key=os.getenv('NEXMO_API_KEY'), secret=os.getenv('NEXMO_SECRET'))
+            key=api_key, secret=os.getenv('NEXMO_SECRET'))
         # TODO: Save pdf_url to database for frontend
         self.pdf_url = self._processPDF(text)
         
@@ -26,20 +28,19 @@ class PDFEngine:
 
     # TODO:
     def _processPDF(self, call_transcript):
-        html = """<!doctype html >
 
-                THIS IS A TEST
-                <html lang = "en" >
-                </html>
-                """
-        # html = self._parseTranscript(call_transcript)
+        transcript_object = self._parseTranscript(call_transcript)
+        with open("./assets/meeting_note_template.html") as t:
+            template = Template(t.read())
+            current_date = datetime.today().strftime('%Y-%m-%d')
+            html = template.render(date = current_date, speakers = transcript_object)
         pdf_url = self._savePDF(html)
         return pdf_url
 
 
-    def textPDF(self, numbers_list):
+    def textPDF(self):
         body_text = "Here are the meeting notes for your recent conference call: " + self.pdf_url
-        for num in numbers_list:
+        for num in self.participants:
             self._sendTextTo(self.from_number, num, body_text)
     
     def _createPDFURL(self):
@@ -48,7 +49,6 @@ class PDFEngine:
 
     # TODO: Remove inline
     def _savePDF(self, html):
-        # TODO make no file needed
         url = self._createPDFURL()
         pdf_data = pdfkit.from_string(html, url)
         pdf_url = self._uploadFileToAWS(url[::-3] , url)
@@ -58,31 +58,38 @@ class PDFEngine:
     def _deleteFile(self, path):
         os.remove(path)
 
-
     # TODO: Need Google Transcript to start parsing
     def _parseTranscript(self, text):
-        pass
+        lines = text.split('\n')
+        transcript_objects = []
+        for line in lines:
+            timestamp = line[:10]
+            split_lines = line.split(" ")
+            speaker_number = split_lines[2]
+            idx = int(speaker_number[:-1]) - 1
+            # print(idx)
+            corresponding_phone_number = self.participants[idx]
+            quotation = " ".join(split_lines[3:])
+            transcript_objects.append(
+                (timestamp, corresponding_phone_number, quotation))
+        return transcript_objects
 
     def _sendTextTo(self, from_number, to_number, text):
-        self.nexmo_client.send_message(
+        response = self.nexmo_client.send_message(
             {'from': from_number, 'to': to_number, 'text': text})
-
-
-    # TODO: name is a timestamp of date + UUID 4 digits
+        response = response['messages'][0]
+        if response['status'] == '0':
+            print('Sent message', response['message-id'])
+            print('Remaining balance is', response['remaining-balance'])
+        else:
+            print('Error:', response['error-text'])
 
     def _uploadFileToAWS(self, name, data):
         AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-
+        print("AWS", AWS_ACCESS_KEY_ID)
         AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
         s3 = boto3.resource('s3')
         print(name)
-        # bucket_location = boto3.client(
-        #     's3').get_bucket_location(Bucket='cs194w')
         s3.meta.client.upload_file(data, 'cs194w', name + ".pdf", ExtraArgs={
                                    'ACL': 'public-read'})
-        # object_url = "https://s3-{0}.amazonaws.com/{1}/{2}".format(
-        #     bucket_location['LocationConstraint'],
-        #     'cs194w',
-        #     name)
-
-        return "https: // s3-us-west-2.amazonaws.com/cs194w/" + name + ".pdf"
+        return "https://s3-us-west-2.amazonaws.com/cs194w/" + name + ".pdf"

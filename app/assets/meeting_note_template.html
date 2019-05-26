@@ -385,20 +385,12 @@ div[data-section-style="19"] .image-mask {
 
 <h1 id='XAGACASwagn'>Scribe {{ date }} Meeting Notes</h1>
 
-<h3 id='XAGACAR8fDH'>{{ caller_1 }}</h3>
 
-{{ text_1 }}<br/>
+{% for speaker in speakers %}
+<br />
+    <h3 id='XAGACAR8fDH'>{{ speaker[0] }} {{ speaker[1] }}</h3>
+    {{ speaker[2] }}<br /> <br />
 
-<br/>
-
-<h3 id='XAGACAe5RR6'>{{ caller_2 }}</h3>
-
-{{ text_2 }}<br/>
-
-<br/>
-
-<h3 id='XAGACAjQjnp'>{{ caller_3 }}</h3>
-
-{{ text_3 }}<br/>
+{% endfor %}
 
 </body></html>
