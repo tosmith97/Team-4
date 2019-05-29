@@ -42,6 +42,7 @@ def start_call():
     request_data = json.loads(request.data)
     ncco_data = {}
     ncco_data['hostname'] = '8978f380.ngrok.io' #current_app.config['HOST_NAME']
+    ncco_data['NEXMO_NUMBER'] = '12013657126'
     conversation_uuid = request_data['conversation_uuid']
     query_string = {'conversation_uuid': conversation_uuid}
     encoded_query_string = '?' + urllib.parse.urlencode(query_string)
@@ -49,12 +50,11 @@ def start_call():
     filein = open('NCCO/calls.json')
     src = Template(filein.read())
     filein.close()
-    ncco = json.loads(src.substitute(ncco_data))
     print(request_data)
     print(ncco)
     sys.stdout.flush()
 
-    # attack uuid to call db object
+    # attach uuid to call db object
     initial_phone_number = request_data.get('from', None)
     print('number is %s' % initial_phone_number)
     if initial_phone_number:
@@ -62,9 +62,14 @@ def start_call():
         last_call = db.session.query(Call).filter(Call.initial_phone_number == initial_phone_number, Call.call_uuid == None).order_by(Call.id.desc()).first()
         print('call num is %s' % last_call.initial_phone_number)
         if last_call:
+            ncco_data['num_channels'] = last_call.num_channels
+            ncco = json.loads(src.substitute(ncco_data))
             last_call.call_uuid = request_data.get('uuid', datetime.today().strftime('%Y-%m-%d'))
             db.session.commit()
 
+        for number in last_call['_phone_numbers'].split(';'):
+                ncco.append({'action': 'connect', 'eventUrl': ['https://' + ncco_data['hostname'] + '/calls/events'], 'from': ncco_data['NEXMO_NUMBER'], 'endpoint': [{'type': 'phone', 'number': number}]})
+            return jsonify(ncco)
     return jsonify(ncco)
 
 
