@@ -12,18 +12,5 @@
         "format": "wav",
         "split": "conversation",
         "beepStart": true
-    },
-    {
-        "action": "connect",
-        "eventUrl": [
-            "https://$hostname/calls/events"
-        ],
-        "from": "12013657126",
-        "endpoint": [
-            {
-                "type": "phone",
-                "number": "17049150666"
-            }
-        ]
     }
 ]

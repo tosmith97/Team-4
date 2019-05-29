@@ -51,25 +51,25 @@ def start_call():
     src = Template(filein.read())
     filein.close()
     print(request_data)
-    print(ncco)
-    sys.stdout.flush()
 
     # attach uuid to call db object
     initial_phone_number = request_data.get('from', None)
     print('number is %s' % initial_phone_number)
     if initial_phone_number:
         # get most recent call based on who called the number + hasn't been updated before + most recent
-        last_call = db.session.query(Call).filter(Call.initial_phone_number == initial_phone_number, Call.call_uuid == None).order_by(Call.id.desc()).first()
+        last_call = db.session.query(Call).filter(Call.initial_phone_number == initial_phone_number).order_by(Call.id.desc()).first()
         print('call num is %s' % last_call.initial_phone_number)
         if last_call:
             ncco_data['num_channels'] = last_call.num_channels
             ncco = json.loads(src.substitute(ncco_data))
-            last_call.call_uuid = request_data.get('uuid', datetime.today().strftime('%Y-%m-%d'))
+            last_call.call_uuid = request_data.get('conversation_uuid', datetime.today().strftime('%Y-%m-%d'))
             db.session.commit()
 
-        for number in last_call['_phone_numbers'].split(';'):
-                ncco.append({'action': 'connect', 'eventUrl': ['https://' + ncco_data['hostname'] + '/calls/events'], 'from': ncco_data['NEXMO_NUMBER'], 'endpoint': [{'type': 'phone', 'number': number}]})
-            return jsonify(ncco)
+        for number in last_call._phone_numbers.split(';'):
+            ncco.append({'action': 'connect', 'eventUrl': ['https://' + ncco_data['hostname'] + '/calls/events'], 'from': ncco_data['NEXMO_NUMBER'], 'endpoint': [{'type': 'phone', 'number': number}]})
+            print(ncco)
+
+    sys.stdout.flush()
     return jsonify(ncco)
 
 
@@ -77,9 +77,6 @@ def start_call():
 def call_events():
     print('events')
     res = json.loads(request.data)
-
-    
-
     print(res)
     sys.stdout.flush()
     return "", 200
@@ -98,7 +95,7 @@ def call_recordings():
         print(url)
         sys.stdout.flush()
         response = client.get_recording(url)
-        uuid = res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d'))
+        uuid = res.get('conversation_uuid', datetime.today().strftime('%Y-%m-%d'))
         fn = os.path.join(*[os.getcwd(), 'recordings', uuid + '.wav'])
 
         # get most recent call based on who called the number + hasn't been updated before + most recent
@@ -129,10 +126,10 @@ def new_call():
             _phone_numbers=form.phone_numbers.data
         )
         db.session.add(call)
-        db.session.commit()   
+        db.session.commit()
         sys.stdout.flush()
         return redirect(url_for('calls.call_status', call_title=form.call_name.data))
-    
+
     return render_template('calls/new_call.html', form=form)
 
 
@@ -147,7 +144,7 @@ def call_status(call_title):
 def calls_list():
     calls = []
     calls_query = db.session.query(Call).filter(Call.user == current_user.id)
-    for c in calls_query: 
+    for c in calls_query:
         phone_numbers = c.initial_phone_number + ', ' + ', '.join(c._phone_numbers.split(';'))
         # TODO: add s3 link
         calls.append((c.call_name, phone_numbers, 'TODO'))
