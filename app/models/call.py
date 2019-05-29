@@ -10,6 +10,7 @@ class Call(db.Model):
     filename = db.Column(db.String(128))
     num_channels = db.Column(db.Integer)
     _phone_numbers = db.Column(db.String)
+    pdf_link = db.Column(db.String)
 
     @property
     def phone_numbers(self):

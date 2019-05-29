@@ -25,9 +25,10 @@ def about():
 
 
 @main.route('/calls-list')
+@login_required
 def list_calls():
-    return render_template(
-        'main/calls-list.html')
+    return redirect(
+        'calls/calls-list')
 
 # TODO: Rest API
 @main.route('/create-call')

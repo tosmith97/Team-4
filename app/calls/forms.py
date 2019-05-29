@@ -14,8 +14,6 @@ from wtforms.validators import (
     Length,
 )
 
-import sys
-
 from app import db
 from app.models import Role, User
 
@@ -29,14 +27,14 @@ class CreateCallForm(Form):
         validators=[InputRequired()], 
         description="e.g. 3")
     initial_phone_number = StringField(
-        "State the phone number that will be instantiating the phone call",
+        "State the phone number that will be instantiating the phone call. Please include the leading '1'",
         validators=[InputRequired()],
-        description="e.g. 2622717436"
+        description="e.g. 12622717436"
     )
     phone_numbers = StringField(
-        "List the numbers that will be on the call, EXCEPT your own, separated by ';'",
+        "List the numbers that will be on the call, EXCEPT your own, separated by ';'. Please include the leading '1'",
         validators=[InputRequired()], 
-        description="e.g. 5433422178;9087544654"
+        description="e.g. 15433422178;19087544654"
     )
 
     submit = SubmitField('Start New Call')
@@ -50,7 +48,5 @@ class CreateCallForm(Form):
         n_callers = len(self.phone_numbers.data.split(';')) + 1
         if n_callers != self.num_callers.data:
             result = False
-
-        sys.stdout.flush()
-
+            
         return result

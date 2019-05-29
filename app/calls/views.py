@@ -41,7 +41,7 @@ calls = Blueprint('calls', __name__)
 def start_call():
     request_data = json.loads(request.data)
     ncco_data = {}
-    ncco_data['hostname'] = 'http://8978f380.ngrok.io' #current_app.config['HOST_NAME']
+    ncco_data['hostname'] = '8978f380.ngrok.io' #current_app.config['HOST_NAME']
     conversation_uuid = request_data['conversation_uuid']
     query_string = {'conversation_uuid': conversation_uuid}
     encoded_query_string = '?' + urllib.parse.urlencode(query_string)
@@ -115,7 +115,6 @@ def call_recordings():
 @login_required
 def new_call():
     form = CreateCallForm()
-    sys.stdout.flush()
     if form.validate_on_submit():
         call = Call(
             user=current_user.id,
@@ -136,3 +135,16 @@ def new_call():
 @login_required
 def call_status(call_title):
     return render_template('calls/call_status.html', call_title=call_title)
+
+
+@calls.route('/calls-list', methods=['GET', 'POST'])
+@login_required
+def calls_list():
+    calls = []
+    calls_query = db.session.query(Call).filter(Call.user == current_user.id)
+    for c in calls_query: 
+        phone_numbers = c.initial_phone_number + ', ' + ', '.join(c._phone_numbers.split(';'))
+        # TODO: add s3 link
+        calls.append((c.call_name, phone_numbers, 'TODO'))
+
+    return render_template('calls/list_calls.html', calls=calls)

@@ -1,2 +1,2 @@
 -- SQLite
-SELECT * FROM calls;
+SELECT * FROM users;
