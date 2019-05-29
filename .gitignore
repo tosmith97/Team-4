@@ -131,6 +131,12 @@ googleauth-privatekey.json
 
 .DS_Store
 
+
+googleauth-privatekey.json
+dump.rdb
+
+*.env
+
 # Data/Test output
 recordings/*.wav
 dump.rdb
