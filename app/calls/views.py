@@ -41,7 +41,7 @@ calls = Blueprint('calls', __name__)
 def start_call():
     request_data = json.loads(request.data)
     ncco_data = {}
-    ncco_data['hostname'] = 'b1233082.ngrok.io' #current_app.config['HOST_NAME']
+    ncco_data['hostname'] = 'http://8978f380.ngrok.io' #current_app.config['HOST_NAME']
     conversation_uuid = request_data['conversation_uuid']
     query_string = {'conversation_uuid': conversation_uuid}
     encoded_query_string = '?' + urllib.parse.urlencode(query_string)
@@ -50,8 +50,21 @@ def start_call():
     src = Template(filein.read())
     filein.close()
     ncco = json.loads(src.substitute(ncco_data))
+    print(request_data)
     print(ncco)
     sys.stdout.flush()
+
+    # attack uuid to call db object
+    initial_phone_number = request_data.get('from', None)
+    print('number is %s' % initial_phone_number)
+    if initial_phone_number:
+        # get most recent call based on who called the number + hasn't been updated before + most recent
+        last_call = db.session.query(Call).filter(Call.initial_phone_number == initial_phone_number, Call.call_uuid == None).order_by(Call.id.desc()).first()
+        print('call num is %s' % last_call.initial_phone_number)
+        if last_call:
+            last_call.call_uuid = request_data.get('uuid', datetime.today().strftime('%Y-%m-%d'))
+            db.session.commit()
+
     return jsonify(ncco)
 
 
@@ -60,13 +73,7 @@ def call_events():
     print('events')
     res = json.loads(request.data)
 
-    initial_phone_number = res.get('from', None)
-
-    if initial_phone_number:
-        # get most recent call based on who called the number + hasn't been updated before + most recent
-        last_call = db.session.query(Call).filter(Call.initial_phone_number == initial_phone_number, Call.call_uuid == None).order_by(Call.id.desc()).first()
-        last_call.call_uuid = res.get('uuid', datetime.today().strftime('%Y-%m-%d'))
-        db.session.commit()
+    
 
     print(res)
     sys.stdout.flush()
@@ -84,6 +91,7 @@ def call_recordings():
     if url:
         print('we have url')
         print(url)
+        sys.stdout.flush()
         response = client.get_recording(url)
         uuid = res.get('recording_uuid', datetime.today().strftime('%Y-%m-%d'))
         fn = os.path.join(*[os.getcwd(), 'recordings', uuid + '.wav'])
