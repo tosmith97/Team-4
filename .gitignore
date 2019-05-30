@@ -140,3 +140,4 @@ dump.rdb
 # Data/Test output
 recordings/*.wav
 dump.rdb
+*.sqlite

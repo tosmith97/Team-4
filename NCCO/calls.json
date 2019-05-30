@@ -8,35 +8,9 @@
         "eventUrl": [
             "https://$hostname/calls/recordings"
         ],
-        "channels": 3,
+        "channels": 2,
         "format": "wav",
         "split": "conversation",
         "beepStart": true
-    },
-    {
-        "action": "connect",
-        "eventUrl": [
-            "https://$hostname/calls/events"
-        ],
-        "from": "NEXMO_NUMBER",
-        "endpoint": [
-            {
-                "type": "phone",
-                "number": "OUT_NUMBER"
-            }
-        ]
-    },
-    {
-        "action": "connect",
-        "eventUrl": [
-            "https://$hostname/calls/events"
-        ],
-        "from": "NEXMO_NUMBER",
-        "endpoint": [
-            {
-                "type": "phone",
-                "number": "OUT_NUMBER"
-            }
-        ]
     }
 ]

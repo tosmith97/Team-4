@@ -47,7 +47,7 @@ class Config:
     # Admin account
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD') or 'password'
     ADMIN_EMAIL = os.environ.get(
-        'ADMIN_EMAIL') or 'flask-base-admin@example.com'
+        'ADMIN_EMAIL') or 'ceo@acme.com'
     EMAIL_SUBJECT_PREFIX = '[{}]'.format(APP_NAME)
     EMAIL_SENDER = '{app_name} Admin <{email}>'.format(
         app_name=APP_NAME, email=MAIL_USERNAME)
