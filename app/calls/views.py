@@ -33,6 +33,7 @@ from datetime import datetime
 from io import BytesIO
 
 import SpeechToTextServiceClient as STTS
+from app.helpers.pdfs import PDFEngine
 
 calls = Blueprint('calls', __name__)
 
@@ -104,11 +105,17 @@ def call_recordings():
 
         a = AudioSegment.from_file(BytesIO(response), channels=last_call.num_channels, sample_width=2, frame_rate=16000)
         a.export(fn, format="wav")
-        db.session.commit()
         print('file saved')
         STTClient = STTS.SpeechToTextServiceClient()
         transcript = STTClient.transcribeAudioFile(fn, True)
         STTClient.saveTranscriptAsTxt(transcript, uuid)
+
+        participants = last_call._phone_numbers.split(';').append(last_call.initial_phone_number)
+        pdf_engine = PDFEngine(participants, transcript)
+        pdf_engine.textPDF()
+        last_call.pdf_link = pdf_engine.pdf_url
+        db.session.commit()
+
     print()
     sys.stdout.flush()
     return "", 200
