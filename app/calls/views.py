@@ -42,7 +42,7 @@ calls = Blueprint('calls', __name__)
 def start_call():
     request_data = json.loads(request.data)
     ncco_data = {}
-    ncco_data['hostname'] = '8978f380.ngrok.io' #current_app.config['HOST_NAME']
+    ncco_data['hostname'] = current_app.config['HOST_NAME']
     ncco_data['NEXMO_NUMBER'] = '12013657126'
     conversation_uuid = request_data['conversation_uuid']
     query_string = {'conversation_uuid': conversation_uuid}
@@ -110,9 +110,12 @@ def call_recordings():
         transcript = STTClient.transcribeAudioFile(fn, True)
         STTClient.saveTranscriptAsTxt(transcript, uuid)
 
-        participants = last_call._phone_numbers.split(';').append(last_call.initial_phone_number)
+        participants = [last_call.initial_phone_number]
+        participants.extend(last_call._phone_numbers.split(';'))
+        print(participants)
         pdf_engine = PDFEngine(participants, transcript)
         pdf_engine.textPDF()
+        print('texted PDF')
         last_call.pdf_link = pdf_engine.pdf_url
         db.session.commit()
 
@@ -146,7 +149,7 @@ def call_status(call_title):
     return render_template('calls/call_status.html', call_title=call_title)
 
 
-@calls.route('/calls-list', methods=['GET', 'POST'])
+@calls.route('/calls-list', methods=['GET'])
 @login_required
 def calls_list():
     calls = []

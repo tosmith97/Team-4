@@ -28,7 +28,6 @@ class PDFEngine:
 
     # TODO:
     def _processPDF(self, call_transcript):
-
         transcript_object = self._parseTranscript(call_transcript)
         with open("./assets/meeting_note_template.html") as t:
             template = Template(t.read())

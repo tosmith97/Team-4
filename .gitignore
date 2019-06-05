@@ -141,3 +141,5 @@ dump.rdb
 recordings/*.wav
 dump.rdb
 *.sqlite
+
+transcripts/

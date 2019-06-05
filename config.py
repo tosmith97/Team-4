@@ -22,7 +22,7 @@ if os.path.exists('config.env'):
 class Config:
     HOST_NAME = os.environ.get('HOST_NAME')
     print(HOST_NAME)
-    APP_NAME = os.environ.get('APP_NAME') or 'Flask-Base'
+    APP_NAME = os.environ.get('APP_NAME') or 'Scribe'
 
     if os.environ.get('SECRET_KEY'):
         SECRET_KEY = os.environ.get('SECRET_KEY')

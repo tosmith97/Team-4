@@ -15,7 +15,7 @@ from io import BytesIO
 def start_call():
     request_data = {'from': '12622717345', 'conversation_uuid': 'uuid'}
     ncco_data = {}
-    ncco_data['hostname'] = '8978f380.ngrok.io' #current_app.config['HOST_NAME']
+    ncco_data['hostname'] = current_app.config['HOST_NAME']
     ncco_data['NEXMO_NUMBER'] = '12013657126'
     conversation_uuid = request_data['conversation_uuid']
     query_string = {'conversation_uuid': conversation_uuid}
