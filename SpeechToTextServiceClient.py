@@ -65,13 +65,15 @@ class SpeechToTextServiceClient:
 
     def transcribeMultichannel(self, results):
         transcript = ""
-        for res in results:
+        for i, res in enumerate(results):
             ts = res.alternatives[0].words[0].start_time
             transcript += "[%02d:%02d:%02d] " % (ts.seconds // 60,
                                                  ts.seconds % 60,
                                                  int(ts.nanos * 1e-9))
             transcript += "Speaker %d: " % res.channel_tag
-            transcript += res.alternatives[0].transcript + "\n"
+            transcript += res.alternatives[0].transcript
+            if i != len(results) - 1: 
+                transcript += "\n"
         return transcript
 
     def diarizeTranscript(self, words):
