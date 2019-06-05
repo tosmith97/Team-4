@@ -148,14 +148,20 @@ def call_status(call_title):
     return render_template('calls/call_status.html', call_title=call_title)
 
 
+def format_number(n):
+    return format(int(n[:-1]), ",").replace(",", "-") + n[-1]
+
+
 @calls.route('/calls-list', methods=['GET'])
 @login_required
 def calls_list():
     calls = []
     calls_query = db.session.query(Call).filter(Call.user == current_user.id)
     for c in calls_query:
-        phone_numbers = c.initial_phone_number + ', ' + ', '.join(c._phone_numbers.split(';'))
-        # TODO: add s3 link
+        outbound_callees = c._phone_numbers.split(';')
+        outbound_callees = [format_number(n) for n in outbound_callees]
+        phone_numbers = format_number(
+            c.initial_phone_number) + ', ' + ', '.join(outbound_callees)
         calls.append((c.call_name, phone_numbers, c.pdf_link))
 
     return render_template('calls/list_calls.html', calls=calls)
