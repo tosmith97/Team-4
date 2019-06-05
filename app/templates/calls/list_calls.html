@@ -1,0 +1,35 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<div class="ui text container">
+
+    <h1>Calls for {{ current_user.first_name }} {{ current_user.last_name }}</h1>
+
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Call Title</th>
+                <th scope="col">Numbers on the Call</th>
+                <th scope="col">Link to Transcription PDF</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for call in calls %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ call[0] }}</td>
+                <td>{{ call[1] }}</td>
+                <td><a href={{call[2]}}>{{ call[2] }}</a></td>
+            </tr>
+            {% endfor %}
+
+            
+        </tbody>
+    </table>
+
+    
+    
+
+</div>
+{% endblock %}

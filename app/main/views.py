@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect
 from flask_login import (
     current_user,
     login_required,
@@ -25,13 +25,14 @@ def about():
 
 
 @main.route('/calls-list')
+@login_required
 def list_calls():
-    return render_template(
-        'main/calls-list.html')
+    return redirect(
+        'calls/calls-list')
 
 # TODO: Rest API
 @main.route('/create-call')
 @login_required
 def create_call():
-    return render_template(
-        'main/create-call.html')
+    return redirect(
+        'calls/create-call')
