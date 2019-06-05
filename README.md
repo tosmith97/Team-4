@@ -37,8 +37,3 @@ Abhi | AI/ML, Backend, Data Management| Communicator | UI/UX design | load balan
 3. [Github](https://github.com/orgs/StanfordCS194/Team-4/)
 
 4. [Wiki](https://docs.google.com/document/d/1HdIB9vsNdflf0_KapojUJDFHbvEIxmMwe6ynIRBxXnc/edit?usp=sharing)
-
-5. [SGM Worksheet TODO](TODO)
-
-## Attributions
-TODO
