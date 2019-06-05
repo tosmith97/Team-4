@@ -5,9 +5,7 @@ import pdfkit
 import boto3
 import os
 import s3transfer
-import textrazor
 import io
-import phonenumbers
 import matplotlib.pyplot as plt
 from datetime import datetime
 from jinja2 import Template
@@ -15,7 +13,6 @@ from collections import defaultdict
 
 class PDFEngine:
 
-    # TODO: Put object creation on the task queue
     def __init__(self, participants=[], text=""):
         self.participants = participants
         self.number_of_participants = len(participants)
@@ -24,18 +21,11 @@ class PDFEngine:
 
         self.nexmo_client = nexmo.Client(
             key=api_key, secret=os.getenv('NEXMO_SECRET'))
-        # TODO: Save pdf_url to database for frontend
-        # self.textrazor.api_key = os.getenv('TEXTRAZOR_APIKEY')
         self.pdf_url = self._processPDF(text)
-        
-    # TODO: As we scale, want multiple numbers. For now, .env works
-    def _getNexmoNumber(self):
-        pass
 
     def _phone_format(self, n):
         return format(int(n[:-1]), ",").replace(",", "-") + n[-1]
         
-    # TODO:
     def _processPDF(self, call_transcript):
         transcript_object = self._parseTranscript(call_transcript)
         transcript_object, nlp_analysis = self._createNLPAnalysis(transcript_object)
@@ -60,7 +50,6 @@ class PDFEngine:
         url = str(uuid.uuid4())
         return url + ".pdf"
 
-    # TODO: Remove inline
     def _savePDF(self, html):
         url = self._createPDFURL()
         pdf_data = pdfkit.from_string(html, url)
@@ -71,7 +60,6 @@ class PDFEngine:
     def _deleteFile(self, path):
         os.remove(path)
 
-    # TODO: Need Google Transcript to start parsing
     def _parseTranscript(self, text):
         lines = text.split('\n')
         transcript_objects = []
@@ -134,10 +122,8 @@ class PDFEngine:
         plt.pie([float(v) for v in d.values()], labels=[str(k) for k in d.keys()],
                    autopct=None)
         img_data = io.BytesIO()
-
         plt.savefig(img_data, format='png')
         img_data.seek(0)
         url = str(uuid.uuid4())
-        print(url)
         img_url = self._uploadImageToAWS(img_data, url)
         return img_url
