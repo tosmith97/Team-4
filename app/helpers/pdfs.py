@@ -5,8 +5,13 @@ import pdfkit
 import boto3
 import os
 import s3transfer
+import textrazor
+import io
+import phonenumbers
+import matplotlib.pyplot as plt
 from datetime import datetime
 from jinja2 import Template
+from collections import defaultdict
 
 class PDFEngine:
 
@@ -20,22 +25,28 @@ class PDFEngine:
         self.nexmo_client = nexmo.Client(
             key=api_key, secret=os.getenv('NEXMO_SECRET'))
         # TODO: Save pdf_url to database for frontend
+        # self.textrazor.api_key = os.getenv('TEXTRAZOR_APIKEY')
         self.pdf_url = self._processPDF(text)
         
     # TODO: As we scale, want multiple numbers. For now, .env works
     def _getNexmoNumber(self):
         pass
 
+    def _phone_format(self, n):
+        return format(int(n[:-1]), ",").replace(",", "-") + n[-1]
+        
     # TODO:
     def _processPDF(self, call_transcript):
         transcript_object = self._parseTranscript(call_transcript)
+        transcript_object, nlp_analysis = self._createNLPAnalysis(transcript_object)
         cwd = os.getcwd()
         rel_path = "app/assets/meeting_note_template.html"
         note_template = os.path.join(cwd, rel_path)
         with open(note_template) as t:
             template = Template(t.read())
             current_date = datetime.today().strftime('%Y-%m-%d')
-            html = template.render(date = current_date, speakers = transcript_object)
+            pie_chart_url = self._createPieChartAndUpload(nlp_analysis)
+            html = template.render(date = current_date, speakers = transcript_object, pie_chart = pie_chart_url)
         pdf_url = self._savePDF(html)
         return pdf_url
 
@@ -69,7 +80,7 @@ class PDFEngine:
             split_lines = line.split(" ")
             speaker_number = split_lines[2]
             idx = int(speaker_number[:-1]) - 1
-            corresponding_phone_number = self.participants[idx]
+            corresponding_phone_number = self._phone_format(self.participants[idx])
             quotation = " ".join(split_lines[3:])
             transcript_objects.append(
                 (timestamp, corresponding_phone_number, quotation))
@@ -92,3 +103,41 @@ class PDFEngine:
         s3.meta.client.upload_file(data, 'cs194w', name + ".pdf", ExtraArgs={
                                    'ACL': 'public-read'})
         return "https://s3-us-west-2.amazonaws.com/cs194w/" + name + ".pdf"
+
+
+    def _uploadImageToAWS(self, img_data, name, filetype=".png"):
+        s3 = boto3.resource('s3')
+        bucket = s3.Bucket('cs194w')
+        bucket.put_object(Body=img_data, ContentType='image/png',
+                          Key=str(name + filetype))
+        return "https://s3-us-west-2.amazonaws.com/cs194w/" + str(name + filetype)
+
+
+    def _createNLPAnalysis(self, transcript_object):
+        word_tracker = defaultdict(list)
+        s = ""
+        for line in transcript_object:
+            number = line[1]
+            spoken_words = line[2]
+            word_tracker[number] += [spoken_words.split(" ")]
+            s += spoken_words
+        total = 0
+        for k, v in word_tracker.items():
+            total += len(v)
+        times = { k: len(v) / (total * 1.0) for k, v in word_tracker.items()}
+        print(times)
+        return transcript_object, times
+
+    
+
+    def _createPieChartAndUpload(self, d):
+        plt.pie([float(v) for v in d.values()], labels=[str(k) for k in d.keys()],
+                   autopct=None)
+        img_data = io.BytesIO()
+
+        plt.savefig(img_data, format='png')
+        img_data.seek(0)
+        url = str(uuid.uuid4())
+        print(url)
+        img_url = self._uploadImageToAWS(img_data, url)
+        return img_url
