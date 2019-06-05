@@ -9,7 +9,7 @@ An application to people to have conference calls that are transcribed. The call
 Rough Implementation Plan:
 - Set up backend to handle phone call conferencing.
 - Develop pipeline for getting call audio data, cleaning the audio data, and converting the cleaned audio data into text.
-- Create NLP engine and document processing pipeline.
+- Create document processing pipeline.
 - Host the documents in the cloud and create unique urls to those documents
 - Send the URL's to the callers
 
