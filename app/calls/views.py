@@ -156,7 +156,7 @@ def calls_list():
     for c in calls_query:
         phone_numbers = c.initial_phone_number + ', ' + ', '.join(c._phone_numbers.split(';'))
         # TODO: add s3 link
-        calls.append((c.call_name, phone_numbers, 'TODO'))
+        calls.append((c.call_name, phone_numbers, c.pdf_link))
 
     return render_template('calls/list_calls.html', calls=calls)
 
