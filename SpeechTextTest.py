@@ -8,27 +8,25 @@ import datetime
 import nexmo
 import wave
 
-URL = "https://api.nexmo.com/v1/files/a0a01d31-69b5-47f4-a9c2-f8c3c5fbe7df"
+URL = "https://api.nexmo.com/v1/files/0ed9fd40-b905-4c25-8bb1-37c4b1cbcd64"
 
-client = nexmo.Client(
-    application_id='4811d796-b14a-4775-b13c-4a93dec02e98',
-    private_key='private.key',
-)
+def from_URL(url):
+    client = nexmo.Client(
+        application_id='4811d796-b14a-4775-b13c-4a93dec02e98',
+        private_key='private.key',
+    )
+    response = client.get_recording(url)
+    fn = os.path.join(*[os.getcwd(), 'recordings', datetime.date.today().strftime('%Y-%m-%d') + '.wav'])
 
-response = client.get_recording(URL)
-fn = os.path.join(*[os.getcwd(), 'recordings', datetime.date.today().strftime('%Y-%m-%d') + '.wav'])
-# with open(fn, "wb+") as f:
-#     f.write(response)
-# a = AudioSegment.from_file(fn)
+    a = AudioSegment.from_file(BytesIO(response), channels=3, sample_width=2, frame_rate=16000)
+    a.export(fn, format="wav")
+    return fn
 
-# with wave.open(fn, "wb") as wf:
-#     wf.setnchannels(2)
-#     wf.setsampwidth(2)
-#     wf.setframerate(16000)
-#     wf.writeframes(response)
-
-a = AudioSegment.from_file(BytesIO(response), channels=2, sample_width=2, frame_rate=16000)
-a.export(fn, format="wav")
-
+# fn = os.path.join(os.getcwd(),
+#                  'recordings',
+#                  '4f33cd4e-2bcf-4e01-bf68-9aac36177de7.wav')
+fn = from_URL(URL)
+print(mediainfo(fn))
 STTClient = STTS.SpeechToTextServiceClient()
-print(STTClient.transcribeAudioFile(fn))
+transcript = STTClient.transcribeAudioFile(fn, True)
+STTClient.saveTranscriptAsTxt(transcript, '1')

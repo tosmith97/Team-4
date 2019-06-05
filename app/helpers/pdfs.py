@@ -21,7 +21,7 @@ class PDFEngine:
         self.number_of_participants = len(participants)
         self.from_number = os.getenv('NEXMO_NUMBER')
         api_key = os.getenv('NEXMO_API_KEY')
-        print("apikey", api_key)
+
         self.nexmo_client = nexmo.Client(
             key=api_key, secret=os.getenv('NEXMO_SECRET'))
         # TODO: Save pdf_url to database for frontend
@@ -37,10 +37,12 @@ class PDFEngine:
         
     # TODO:
     def _processPDF(self, call_transcript):
-
         transcript_object = self._parseTranscript(call_transcript)
         transcript_object, nlp_analysis = self._createNLPAnalysis(transcript_object)
-        with open("./assets/meeting_note_template.html") as t:
+        cwd = os.getcwd()
+        rel_path = "app/assets/meeting_note_template.html"
+        note_template = os.path.join(cwd, rel_path)
+        with open(note_template) as t:
             template = Template(t.read())
             current_date = datetime.today().strftime('%Y-%m-%d')
             pie_chart_url = self._createPieChartAndUpload(nlp_analysis)
@@ -78,7 +80,6 @@ class PDFEngine:
             split_lines = line.split(" ")
             speaker_number = split_lines[2]
             idx = int(speaker_number[:-1]) - 1
-            # print(idx)
             corresponding_phone_number = self._phone_format(self.participants[idx])
             quotation = " ".join(split_lines[3:])
             transcript_objects.append(
