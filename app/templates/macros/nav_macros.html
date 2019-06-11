@@ -54,9 +54,12 @@
    {% endif %}
 {% endmacro %}
 
+
+<link rel="icon" href="/images/logo.png">
+
 {% macro mobile_nav(current_user, dropdown=None) %}
    <div class="mobile only row">
-       <div class="ui fixed inverted black main menu">
+       <div class="ui fixed inverted blue main menu">
            {{ header_items(current_user) }}
            <div class="right menu">
                <a class="icon item" id="open-nav"><i class="sidebar icon"></i></a>
@@ -77,7 +80,7 @@
      {{ render_menu_items([item]) }}
    {% elif item | length == 2 %}
      <div class="ui dropdown item" onClick="changeMenu(this)">{{ item[0] }} <i class="dropdown icon"></i>
-       <div class="inverted black menu">
+       <div class="inverted blue menu">
          {{ create_dropdown(item[1]) }}
        </div>
      </div>
@@ -87,7 +90,7 @@
 
 {% macro desktop_nav(current_user, dropdown=None) %}
    <div class="computer tablet only row">
-       <div class="ui fixed inverted black main menu">
+       <div class="ui fixed inverted blue main menu">
            <div class="ui container">
                {{ header_items(current_user) }}
                {{ create_dropdown(dropdown) }}
