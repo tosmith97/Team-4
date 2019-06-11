@@ -100,23 +100,25 @@ def call_recordings():
         fn = os.path.join(*[os.getcwd(), 'recordings', uuid + '.wav'])
 
         # get most recent call based on who called the number + hasn't been updated before + most recent
-        last_call = db.session.query(Call).filter(Call.call_uuid == uuid).first()
-        last_call.filename = fn
+        last_call = db.session.query(Call).filter(Call.call_uuid == uuid).filter(Call.filename == None).first()
+        
+        if last_call:
+            last_call.filename = fn
 
-        a = AudioSegment.from_file(BytesIO(response), channels=last_call.num_channels, sample_width=2, frame_rate=16000)
-        a.export(fn, format="wav")
-        print('file saved')
-        STTClient = STTS.SpeechToTextServiceClient()
-        transcript = STTClient.transcribeAudioFile(fn, True)
-        STTClient.saveTranscriptAsTxt(transcript, uuid)
+            a = AudioSegment.from_file(BytesIO(response), channels=last_call.num_channels, sample_width=2, frame_rate=16000)
+            a.export(fn, format="wav")
+            print('file saved')
+            STTClient = STTS.SpeechToTextServiceClient()
+            transcript = STTClient.transcribeAudioFile(fn, True)
+            STTClient.saveTranscriptAsTxt(transcript, uuid)
 
-        participants = [last_call.initial_phone_number]
-        participants.extend(last_call._phone_numbers.split(';'))
-        pdf_engine = PDFEngine(participants=participants, text=transcript)
-        pdf_engine.textPDF()
-        print('texted PDF')
-        last_call.pdf_link = pdf_engine.pdf_url
-        db.session.commit()
+            participants = [last_call.initial_phone_number]
+            participants.extend(last_call._phone_numbers.split(';'))
+            pdf_engine = PDFEngine(participants=participants, text=transcript)
+            pdf_engine.textPDF()
+            print('texted PDF')
+            last_call.pdf_link = pdf_engine.pdf_url
+            db.session.commit()
 
     print()
     sys.stdout.flush()

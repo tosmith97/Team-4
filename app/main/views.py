@@ -14,7 +14,8 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    return render_template('main/index.html')
+    return redirect(
+        'calls/calls-list')
 
 
 @main.route('/about')
