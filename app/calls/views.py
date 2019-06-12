@@ -61,7 +61,7 @@ def start_call():
         last_call = db.session.query(Call).filter(Call.initial_phone_number == initial_phone_number).order_by(Call.id.desc()).first()
         print('call num is %s' % last_call.initial_phone_number)
         if last_call:
-            ncco_data['num_channels'] = last_call.num_channels
+            ncco_data['NUM_CHANNELS'] = last_call.num_channels
             ncco = json.loads(src.substitute(ncco_data))
             last_call.call_uuid = request_data.get('conversation_uuid', datetime.today().strftime('%Y-%m-%d'))
             db.session.commit()
@@ -112,8 +112,10 @@ def call_recordings():
             transcript = STTClient.transcribeAudioFile(fn, True)
             STTClient.saveTranscriptAsTxt(transcript, uuid)
 
-            participants = [last_call.initial_phone_number]
-            participants.extend(last_call._phone_numbers.split(';'))
+            # participants = [last_call.initial_phone_number]
+            # participants.extend(last_call._phone_numbers.split(';'))
+            participants = list(reversed(last_call._phone_numbers.split(';')))
+            participants.append(last_call.initial_phone_number)
             pdf_engine = PDFEngine(participants=participants, text=transcript)
             pdf_engine.textPDF()
             print('texted PDF')

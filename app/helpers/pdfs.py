@@ -71,7 +71,7 @@ class PDFEngine:
             corresponding_phone_number = self._phone_format(self.participants[idx])
             quotation = " ".join(split_lines[3:])
             transcript_objects.append(
-                (timestamp, corresponding_phone_number, quotation))
+                (timestamp, "Speaker " + str(idx + 1), quotation))
         return transcript_objects
 
     def _sendTextTo(self, from_number, to_number, text):

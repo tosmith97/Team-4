@@ -8,7 +8,7 @@
         "eventUrl": [
             "https://$hostname/calls/recordings"
         ],
-        "channels": 2,
+        "channels": "$NUM_CHANNELS",
         "format": "wav",
         "split": "conversation",
         "beepStart": true
